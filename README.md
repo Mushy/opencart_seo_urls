@@ -13,6 +13,6 @@ The excellent htaccess tester by Made With Love (no affiliation) can be used to 
 
 Rewrite rules are because OpenCart doesn't alter the old product_id= URL to redirect to the new one. Set to use a 302 by default. Will preserve category paths.
 
-Example output of the rewrites:
-www.myshop.com/maincat/subcat?product_id=123
+Example output of the rewrites:  
+www.myshop.com/maincat/subcat?product_id=123  
 www.myshop.com/maincat/subcat/myproduct
