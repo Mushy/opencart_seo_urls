@@ -57,7 +57,7 @@ foreach ($prods as $prod) {
 	$seoKeyword = strtolower($seoURL);
 
 	// For the rewrites and the oc_seo_urls table.
-	$seoQuery = 'product_id='.$prod['product_id'];
+	$seoQuery = "product_id={$prod['product_id']}";
 
 	// Check if the product already has a rewrite in place.
 	if ($prod['keyword'] != '') {
@@ -80,6 +80,14 @@ foreach ($prods as $prod) {
 			// Loop again?
 			$urlFound = $checkProdName != 0 ? true : false;
 		}
+
+		$added = false;
+		if ($update_db) {
+			// Insert the new SEO URL into oc_seo_urls table.
+			$storeID = 0;
+			$languageID = 1;
+			$added = $ins->execute();
+		}
 	}
 
 	// Write the old/new URL to array for the rewrites later.
@@ -91,21 +99,15 @@ foreach ($prods as $prod) {
 
 	if ($output_screen) {
 		// Output to screen for sanity checks.
-		echo "Product  ID: {$prod['product_id']}<br>Name: {$prod['name']}<br>Has Rewrite: ".($prod['keyword'] != '' ? 'Yes' : 'No')."<br>";
+		echo "Product  ID: {$prod['product_id']}<br>Name: {$prod['name']}<br>Has Rewrite: " . ($prod['keyword'] != '' ? 'Yes' : 'No') . "<br>";
 		if ($prod['keyword'] == '') {
 			echo "URL Increments: $urlIncrement<br>";
 			echo "Keyword: $seoKeyword<br>";
+			echo "Added to DB: " . ($added ? 'Yes' : 'No') . '(DB Insert On/Off: ' . ($update_db ? 'On' : 'Off') . ')<br>';
 		} else {
 			echo "Existing Rewrite: {$prod['keyword']}<br>";
 		}
 		echo '<br>';
-	}
-
-	if ($update_db) {
-		// DB Updates.
-		$storeID = 0;
-		$languageID = 1;
-		$ins->execute();
 	}
 }
 
