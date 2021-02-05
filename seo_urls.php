@@ -17,7 +17,7 @@ try {
 
 // Debug to screen.
 $output_screen = true;
-// Update DB or not. Two separate ones since might want to screen and update not either or.
+// Update DB or not. Two separate ones since might want to screen and update not either/or.
 $update_db = false;
 // Generate rewrites at all.
 $rewrites = true;
@@ -103,7 +103,7 @@ foreach ($prods as $prod) {
 
 	if ($output_screen) {
 		// Output to screen for sanity checks.
-		echo "Product  ID: {$prod['product_id']}<br>Name: {$prod['name']}<br>Has Rewrite: " . ($prod['keyword'] != '' ? 'Yes' : 'No') . "<br>";
+		echo "Product ID: {$prod['product_id']}<br>Name: {$prod['name']}<br>Has Rewrite: " . ($prod['keyword'] != '' ? 'Yes' : 'No') . "<br>";
 		if ($prod['keyword'] == '') {
 			echo "URL Increments: $urlIncrement<br>";
 			echo "Keyword: $seoKeyword<br>";
