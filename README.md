@@ -8,3 +8,6 @@ Overly commented because I don't write enough comments.
 Update the URL characters that are replaced in the $find and $repl arrays if you aren't happy with what I have used.
 
 Some optional variables can be set for checking / updating / rewrites, check the comments.
+
+The excellent htaccess tester by Made With Love (no affiliation) can be used to test the rewrite rules.
+https://htaccess.madewithlove.be/
