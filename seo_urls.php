@@ -20,18 +20,14 @@ $output_screen = true;
 // Update DB or not. Two separate ones since might want to screen and update not either or.
 $update_db = false;
 // Generate rules for new URLs only.
-$rewrites_new = true;
-
-// Prepare a check for existing url on product.
-$checkHasRewrite = $dbh->prepare("SELECT `keyword` FROM oc_seo_url WHERE `query` = :query");
-$checkHasRewrite->bindParam(':query', $seoQuery, PDO::PARAM_STR);
+$rewrites_new = false;
 
 // Prepare a check for existing keyword for new urls.
 $checkKeyword = $dbh->prepare("SELECT COUNT(*) FROM oc_seo_url WHERE `keyword` = :keyword");
 $checkKeyword->bindParam(':keyword', $seoKeyword, PDO::PARAM_STR);
 
 // Grab all the products.
-$prods = $dbh->query("SELECT P.product_id, D.`name` FROM oc_product P LEFT JOIN oc_product_description D ON D.product_id = P.product_id")->fetchAll(PDO::FETCH_ASSOC);
+$prods = $dbh->query("SELECT p.product_id, d.`name`, s.`keyword` FROM oc_product p LEFT JOIN oc_product_description d ON d.product_id = p.product_id LEFT JOIN oc_seo_url s ON s.`query` = CONCAT('product_id=', p.product_id)")->fetchAll(PDO::FETCH_ASSOC);
 
 // Prepare INSERT for rewrite.
 $ins = $dbh->prepare("INSERT INTO oc_seo_url (store_id, language_id, `query`, `keyword`) VALUES (:store_id, :language_id, :query, :keyword)");
@@ -41,7 +37,7 @@ $ins->bindParam(':query', $seoQuery, PDO::PARAM_STR);
 $ins->bindParam(':keyword', $seoKeyword, PDO::PARAM_STR);
 
 // Find and replace non valid chars.
-// amp; and quot; on the end are from & replacement.
+// amp; and quot; are from & replacement.
 $find = ['(', ')', '[', ']', ' ', '?', '#', ':', '%', '/', '&', '"', 'amp;', 'quot;', '`', '”', "'", '°', 'Ø'];
 $repl = ['', '', '', '', '-', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
 
@@ -60,13 +56,11 @@ foreach ($prods as $prod) {
 	// Lower case for uniformity.
 	$seoKeyword = strtolower($seoURL);
 
-	// Check if the product already has a rewrite in place.
+	// For the rewrites and the oc_seo_urls table.
 	$seoQuery = 'product_id='.$prod['product_id'];
-	$checkHasRewrite->execute();
-	$checkHasRewrite_ans = $checkHasRewrite->fetchColumn();
-	$hasRewrite = $checkHasRewrite_ans != '' ? true : false;
 
-	if (!$hasRewrite) {
+	// Check if the product already has a rewrite in place.
+	if ($prod['keyword'] != '') {
 		// No rewrite, begin the process!
 		// First check the keyword is already used or not.
 		$checkKeyword->execute();
@@ -90,19 +84,19 @@ foreach ($prods as $prod) {
 
 	// Write the old/new URL to array for the rewrites later.
 	if ($rewrites_new) {
-		if (!$hasRewrite) $rewrites[] = ['old' => "product_id={$prod['product_id']}", 'new' => $seoKeyword];
+		if ($prod['keyword'] == '') $rewrites[] = ['old' => $seoQuery, 'new' => $seoKeyword];
 	} else {
-		$rewrites[] = ['old' => "product_id={$prod['product_id']}", 'new' => $seoKeyword];
+		$rewrites[] = ['old' => $seoQuery, 'new' => $seoKeyword];
 	}
 
 	if ($output_screen) {
 		// Output to screen for sanity checks.
-		echo "Product  ID: {$prod['product_id']}<br>Name: {$prod['name']}<br>Has Rewrite: ".($hasRewrite ? 'Yes' : 'No')."<br>";
-		if (!$hasRewrite) {
+		echo "Product  ID: {$prod['product_id']}<br>Name: {$prod['name']}<br>Has Rewrite: ".($prod['keyword'] != '' ? 'Yes' : 'No')."<br>";
+		if ($prod['keyword'] == '') {
 			echo "URL Increments: $urlIncrement<br>";
 			echo "Keyword: $seoKeyword<br>";
 		} else {
-			echo "Existing Rewrite: $checkHasRewrite_ans<br>";
+			echo "Existing Rewrite: {$prod['keyword']}<br>";
 		}
 		echo '<br>';
 	}
