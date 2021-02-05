@@ -19,6 +19,8 @@ try {
 $output_screen = true;
 // Update DB or not. Two separate ones since might want to screen and update not either or.
 $update_db = false;
+// Generate rewrites at all.
+$rewrites = true;
 // Generate rules for new URLs only.
 $rewrites_new = false;
 
@@ -60,7 +62,7 @@ foreach ($prods as $prod) {
 	$seoQuery = "product_id={$prod['product_id']}";
 
 	// Check if the product already has a rewrite in place.
-	if ($prod['keyword'] != '') {
+	if ($prod['keyword'] == '') {
 		// No rewrite, begin the process!
 		// First check the keyword is already used or not.
 		$checkKeyword->execute();
@@ -91,10 +93,12 @@ foreach ($prods as $prod) {
 	}
 
 	// Write the old/new URL to array for the rewrites later.
-	if ($rewrites_new) {
-		if ($prod['keyword'] == '') $rewrites[] = ['old' => $seoQuery, 'new' => $seoKeyword];
-	} else {
-		$rewrites[] = ['old' => $seoQuery, 'new' => $seoKeyword];
+	if ($rewrites) {
+		if ($rewrites_new) {
+			if ($prod['keyword'] == '') $rewrites[] = ['old' => $seoQuery, 'new' => $seoKeyword];
+		} else {
+			$rewrites[] = ['old' => $seoQuery, 'new' => $seoKeyword];
+		}
 	}
 
 	if ($output_screen) {
@@ -112,8 +116,10 @@ foreach ($prods as $prod) {
 }
 
 // Last but not least, output the rewrites to screen.
-echo '<h4>Rewrites ('.count($rewrites).')</h4>';
-foreach ($rewrites as $rewrite) {
-	echo 'RewriteCond %{QUERY_STRING} '.$rewrite['old'].'<br>';
-	echo 'RewriteRule (.*) ${REQUEST_URI}/'.$rewrite['new'].'? [R=302,L]<br><br>';
+if ($rewrites) {
+	echo '<h4>Rewrites ('.count($rewrites).')</h4>';
+	foreach ($rewrites as $rewrite) {
+		echo 'RewriteCond %{QUERY_STRING} '.$rewrite['old'].'<br>';
+		echo 'RewriteRule (.*) ${REQUEST_URI}/'.$rewrite['new'].'? [R=302,L]<br><br>';
+	}
 }
