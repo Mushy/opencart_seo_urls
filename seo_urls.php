@@ -16,7 +16,7 @@ try {
 }
 
 // Debug to screen.
-$output_screen = false;
+$output_screen = true;
 // Update DB or not. Two separate ones since might want to screen and update not either or.
 $update_db = false;
 // Generate rules for new URLs only.
