@@ -5,6 +5,8 @@ Based on OpenCart Version 3.0.3.2 when written, should be fine for other version
 
 Overly commented because I don't write enough comments.
 
+It is assumed that the script lives in a new directory like /custom/ or /scripts/ or such and as such loads the config using ../ so you may need to alter that.
+
 Update the URL characters that are replaced in the $find and $repl arrays if you aren't happy with what I have used.
 
 Some optional variables can be set for checking / updating / rewrites, check the comments.
