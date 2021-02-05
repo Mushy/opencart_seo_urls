@@ -42,8 +42,8 @@ $ins->bindParam(':keyword', $seoKeyword, PDO::PARAM_STR);
 
 // Find and replace non valid chars.
 // amp; and quot; on the end are from & replacement.
-$find = ['(', ')', '[', ']', ' ', '?', '#', ':', '%', '/', '&', '"', 'amp;', 'quot;'];
-$repl = ['', '', '', '', '-', '', '', '', '', '', '', '', '', ''];
+$find = ['(', ')', '[', ']', ' ', '?', '#', ':', '%', '/', '&', '"', 'amp;', 'quot;', '`', '”', "'", '°', 'Ø'];
+$repl = ['', '', '', '', '-', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
 
 // Empty array to store the rewrites for htaccess.
 $rewrites = [];
